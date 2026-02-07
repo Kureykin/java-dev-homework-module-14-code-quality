@@ -16,27 +16,49 @@ public class App {
         System.out.println(" " + box[6] + " | " + box[7] + " | " + box[8] + " \n");
     }
 
+    private static boolean lineCheck(char chr) {
+        for (int i = 0; i < 6; i += 3) {
+            if(box[i] == chr && box[i] == box[i + 1] && box[i] == box[i + 2]) {
+                    return true;
+            }
+        }
+
+        return false;
+    }
+    private static boolean columCheck(char chr) {
+        for (int i = 0; i < 3; i++) {
+            if (box[i] == chr && box[i] == box[i + 3] && box[i] == box[i + 6]) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private static boolean diagonalCheck(char chr) {
+        for (int i = 0; i < 3; i += 2) {
+            if (box[i]== chr && box[i] == box[4] && box[i] == box[8 - i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean isThatWin(char chr) {
-        return  (box[0]== chr && box[1]== chr && box[2]== chr) || (box[3]== chr && box[4]== chr && box[5]== chr) || (box[6]== chr && box[7]== chr && box[8]== chr) ||
-                (box[0]== chr && box[3]== chr && box[6]== chr) || (box[1]== chr && box[4]== chr && box[7]== chr) || (box[2]== chr && box[5]== chr && box[8]== chr) ||
-                (box[0]== chr && box[4]== chr && box[8]== chr) || (box[2]== chr && box[4]== chr && box[6]== chr);
+        return  lineCheck(chr) || columCheck(chr) || diagonalCheck(chr);
     }
     private static boolean whoWon() {
-        showMap();
-
         if(isThatWin('X')) {
             System.out.println("You won the game!\nCreated by Shreyas Saha. Thanks for playing!");
-            return false;
+            return true;
         }
         if (isThatWin('O')) {
             System.out.println("You lost the game!\nCreated by Shreyas Saha. Thanks for playing!");
-            return false;
+            return true;
         }
         if (!boxAvailable) {
             System.out.println("It's a draw!\nCreated by Shreyas Saha. Thanks for playing!");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private static boolean setCharInBox(int cord, char chr) {
@@ -72,21 +94,27 @@ public class App {
 
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
+        boolean gameIsEnd;
 
         System.out.println("Enter box number to select. Enjoy!\n");
         showMap();
 
         Arrays.fill(box, ' ');
 
-        while (whoWon()) {
-            for (boolean end = false;!end;) {
+        do {
+            showMap();
+
+            for (boolean end = false; !end;) {
                 end = setXInBox(scan.nextByte());
             }
+            gameIsEnd = whoWon();
             isItDraw();
-            if (boxAvailable) {
+            if (boxAvailable && !gameIsEnd) {
                 setOInBox();
+                gameIsEnd = whoWon();
             }
-        }
+
+        } while (!gameIsEnd);
         scan.close();
     }
 }
